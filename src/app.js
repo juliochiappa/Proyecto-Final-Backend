@@ -7,6 +7,7 @@ import cartsRouter from './routes/carts.routes.js';
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/static', express.static(`${config.DIRNAME}/public`));
