@@ -37,6 +37,11 @@ const productManager = {
     try {
       const data = fs.readFileSync(productsFiles, "utf-8");
       const products = JSON.parse(data);
+      // Verifico si el código del nuevo producto ya existe
+      const codeExists = products.some(product => product.code === req.body.code);
+      if (codeExists) {
+        return res.status(400).send({ error: "El código del producto ya está siendo utilizado" });
+      }
       const newProduct = {
         id: products.length + 1,
         title: req.body.title,
