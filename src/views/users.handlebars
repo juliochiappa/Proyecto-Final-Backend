@@ -1,0 +1,8 @@
+<div>
+    <h1>¡ Listado de Usuarios !</h1>
+    <ul class="list-group">
+        {{#each users}}
+            <li class="list-group-item">{{lastName}}, {{firstName}} {{#if IsAdmin}}(admin){{/if}}</li>
+        {{/each}}
+    </ul>
+</div>

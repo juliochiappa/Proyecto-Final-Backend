@@ -30,5 +30,45 @@
     "id": 3,
     "status": true,
     "thumbnails": []
+  },
+  {
+    "id": 4,
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": 5,
+    "title": "Nombre estética",
+    "description": "Limpieza de cutis",
+    "code": "aaa111",
+    "price": 2000,
+    "status": true,
+    "stock": 10,
+    "category": "Estética",
+    "thumbnails": []
+  },
+  {
+    "id": 6,
+    "title": "Nombre estética",
+    "description": "Limpieza de cutis",
+    "code": "aaa222",
+    "price": 2000,
+    "status": true,
+    "stock": 10,
+    "category": "Estética",
+    "thumbnails": []
+  },
+  {
+    "id": 7,
+    "title": "Nombre estética",
+    "description": "Limpieza de cutis",
+    "code": "bbb222",
+    "price": 2000,
+    "status": true,
+    "stock": 10,
+    "category": "Estética",
+    "thumbnails": [
+      "imagen4.jpg"
+    ]
   }
 ]

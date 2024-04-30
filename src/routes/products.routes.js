@@ -10,4 +10,4 @@ productsRouter.put('/:pid', productManager.updateProduct);
 productsRouter.delete('/:pid', productManager.deleteProduct);
 
 
- export default productsRouter;
+export default productsRouter;
