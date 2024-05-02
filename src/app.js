@@ -4,9 +4,15 @@ import config from './config.js';
 import productsRouter from './routes/products.routes.js';
 import cartsRouter from './routes/carts.routes.js';
 import viewRouter from './routes/views.routes.js';
-
+import initSocket from './sockets.js';
 
 const app = express();
+
+const expressInstance = app.listen(config.PORT, () => {
+    console.log(`App activa en puerto ${config.PORT}`);
+});
+const socketServer = initSocket(expressInstance);
+app.set('socketServer', socketServer);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -15,8 +21,8 @@ app.engine('handlebars', handlebars.engine());
 app.set('views', `${config.DIRNAME}/views`);
 app.set('view engine', 'handlebars');
 
-app.use('/', viewRouter); //Uso de plantilla de Handlebars
-app.use('/users', viewRouter);
+ //Uso de plantilla de Handlebars
+app.use('/', viewRouter);
 
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
@@ -32,6 +38,3 @@ app.get('/', (req, res) => {
     `);
   });
 
-app.listen(config.PORT, () => {
-    console.log(`Servidor express activo en puerto ${config.PORT}`);
-});

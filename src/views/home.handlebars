@@ -1,8 +1,8 @@
 <div>
-    <h1>¡ Listado de Usuarios !</h1>
+    <h1>¡ Listado de Productos !</h1>
     <ul class="list-group">
-        {{#each users}}
-            <li class="list-group-item">{{lastName}}, {{firstName}} {{age}} años {{#if IsAdmin}}(admin){{/if}}</li>
+        {{#each home}}
+            <li class="list-group-item">{{id}}, {{title}}, {{description}}, {{code}}, {{price}}, {{status}}, {{stock}}, {{category}} {{thumbnails}}</li>
         {{/each}}
     </ul>
 </div>
