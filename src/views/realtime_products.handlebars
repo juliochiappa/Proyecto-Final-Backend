@@ -58,8 +58,8 @@
     const serverAddress = 'ws://localhost:8080';
     const socketClient = io(serverAddress);
 
-    const productsList = document.getProductById('productsList');
-    const productForm = document.getProductById('productForm');
+    const productsList = document.getElementById('productsList');
+    const productForm = document.getElementById('productForm');
 
     socketClient.on('newProduct', data => {
         const li = document.createElement('li');
@@ -71,15 +71,15 @@
     productForm.addEventListener('submit', async (evt) => {
         evt.preventDefault();
 
-        const id = document.getProductById('id').value;
-        const title = document.getProductById('title').value;
-        const description = document.getProductById('description').value;
-        const code = document.getProductById('code').value;
-        const price = document.getProductById('price').value;
-        const status = document.getProductById('status').value;
-        const stock = document.getProductById('stock').value;
-        const category = document.getProductById('category').value;
-        const category = document.getProductById('thumbnails').value;
+        const id = document.getElementById('id').value;
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+        const code = document.getElementById('code').value;
+        const price = document.getElementById('price').value;
+        const status = document.getElementById('status').value;
+        const stock = document.getElementById('stock').value;
+        const category = document.getElementById('category').value;
+        const thumbnails = document.getElementById('thumbnails').value;
 
         const process = await fetch('/api/products', {
             method: 'POST',
