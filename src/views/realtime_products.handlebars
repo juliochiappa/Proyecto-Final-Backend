@@ -2,7 +2,7 @@
     <h1>Listado de productos</h1>
 
     <ul id="productsList" class="list-group">
-        {{#each realtime_products}}
+        {{#each products}}
             <li class="list-group-item">{{id}}, {{title}}, {{description}}, {{code}}, {{price}}, {{status}}, {{stock}}, {{category}} {{thumbnails}}</li>
         {{/each}}
     </ul>
