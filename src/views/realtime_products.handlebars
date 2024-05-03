@@ -3,7 +3,7 @@
 
     <ul id="productsList" class="list-group">
         {{#each products}}
-            <li class="list-group-item">{{id}}, {{title}}, {{description}}, {{code}}, {{price}}, {{status}}, {{stock}}, {{category}} {{thumbnails}}</li>
+            <li class="list-group-item">{{id}}, {{title}}, {{description}}, {{code}}, {{price}}, {{status}}, {{stock}}, {{category}}, {{thumbnails}}</li>
         {{/each}}
     </ul>
 </div>
@@ -12,10 +12,10 @@
     <h3>Producto Nuevo</h3>
 
     <form id="productForm">
-        <div class="form-group">
+        {{!-- <div class="form-group">
             <label for="id">ID:</label>
             <input class="form-control" type="text" id="id" name="id" placeholder="ID del producto">
-        </div>
+        </div> --}}
         <div class="form-group">
             <label for="title">Título:</label>
             <input class="form-control" type="text" id="title" name="title" placeholder="Título del producto">
@@ -69,23 +69,34 @@
     });
 
     productForm.addEventListener('submit', async (evt) => {
-        evt.preventDefault();
+    evt.preventDefault();
 
-        const id = document.getElementById('id').value;
-        const title = document.getElementById('title').value;
-        const description = document.getElementById('description').value;
-        const code = document.getElementById('code').value;
-        const price = document.getElementById('price').value;
-        const status = document.getElementById('status').value;
-        const stock = document.getElementById('stock').value;
-        const category = document.getElementById('category').value;
-        const thumbnails = document.getElementById('thumbnails').value;
+    //const id = document.getElementById('id').value;
+    const title = document.getElementById('title').value;
+    const description = document.getElementById('description').value;
+    const code = document.getElementById('code').value;
+    const price = document.getElementById('price').value;
+    const status = document.getElementById('status').value;
+    const stock = document.getElementById('stock').value;
+    const category = document.getElementById('category').value;
+    const thumbnails = document.getElementById('thumbnails').value;
 
-        const process = await fetch('/api/products', {
+    try {
+        const response = await fetch('/api/products', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, title, description, code, price, status, stock, category, thumbnails })
+            body: JSON.stringify({title, description, code, price, status, stock, category, thumbnails })
         });
-    });
+
+        if (response.ok) {
+            console.log('Producto cargado correctamente.');
+        } else {
+            console.error('Error al cargar el producto.');
+        }
+    } catch (error) {
+        console.error('Error de red:', error);
+    }
+});
+
 </script>
 

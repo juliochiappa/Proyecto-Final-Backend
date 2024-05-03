@@ -70,5 +70,27 @@
     "thumbnails": [
       "imagen4.jpg"
     ]
+  },
+  {
+    "id": 8,
+    "title": "Producto",
+    "description": "Nuevo",
+    "code": "fff333",
+    "price": "2000",
+    "status": true,
+    "stock": "7",
+    "category": "Estética",
+    "thumbnails": []
+  },
+  {
+    "id": 9,
+    "title": "Producto Estética",
+    "description": "Reducción grasa abdominal",
+    "code": "ddd232",
+    "price": "6500",
+    "status": true,
+    "stock": "10",
+    "category": "Estética",
+    "thumbnails": []
   }
 ]
