@@ -3,7 +3,7 @@
 
     <ul id="productsList" class="list-group">
         {{#each products}}
-            <li class="list-group-item">{{id}}, {{title}}, {{description}}, {{code}}, {{price}}, {{status}}, {{stock}}, {{category}}, {{thumbnails}}</li>
+            <li class="list-group-item">{{title}}, {{description}}, {{code}}, {{price}}, {{status}}, {{stock}}, {{category}}, {{thumbnails}}</li>
         {{/each}}
     </ul>
 </div>
@@ -12,10 +12,6 @@
     <h3>Producto Nuevo</h3>
 
     <form id="productForm">
-        {{!-- <div class="form-group">
-            <label for="id">ID:</label>
-            <input class="form-control" type="text" id="id" name="id" placeholder="ID del producto">
-        </div> --}}
         <div class="form-group">
             <label for="title">Título:</label>
             <input class="form-control" type="text" id="title" name="title" placeholder="Título del producto">
@@ -71,7 +67,7 @@
     productForm.addEventListener('submit', async (evt) => {
     evt.preventDefault();
 
-    //const id = document.getElementById('id').value;
+
     const title = document.getElementById('title').value;
     const description = document.getElementById('description').value;
     const code = document.getElementById('code').value;
@@ -87,7 +83,6 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({title, description, code, price, status, stock, category, thumbnails })
         });
-
         if (response.ok) {
             console.log('Producto cargado correctamente.');
         } else {

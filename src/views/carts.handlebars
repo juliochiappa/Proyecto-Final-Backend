@@ -1,8 +1,10 @@
 <div>
-    <h1>¡ Listado de Productos !</h1>
+    <h1>Carrito de Productos</h1>
     <ul class="list-group">
-        {{#each products}}
-            <li class="list-group-item">{{id}}, {{title}}, {{description}}, {{code}}, {{price}}, {{status}}, {{stock}}, {{category}}, {{thumbnails}}</li>
+        {{#each carts}}
+            {{#each products}}
+                <li class="list-group-item">ID Producto: {{this._id}}, Producto: {{this.description}},  Stock: {{this.stock}}</li>
+            {{/each}}
         {{/each}}
     </ul>
 </div>
@@ -11,5 +13,5 @@
 <script>
     const serverAddress = 'ws://localhost:8080';
     const socketClient = io(serverAddress);
-    
 </script>
+

@@ -1,56 +1,60 @@
-import {Router} from 'express';
-import {data, product} from '../data.js';
-import fs from 'fs';
-import path from 'path';
-import config from '../config.js';
+import { Router } from "express";
+import ProductManager from "../dao/productsManager.js";
+import CartManager from "../dao/cartsManager.js";
+import UserManager from "../dao/usersManager.js";
+
 
 const viewRouter = Router();
+const managerProduct = new ProductManager();
+const managerUser = new UserManager();
+const managerCart = new CartManager();
 
-
-viewRouter.get('/welcome', (req, res) => {
-    const user= { name: 'Julio Cesar CHIAPPA' }
-    res.render('index', user );
+viewRouter.get("/chat", async (req, res) => {
+  res.render("chat", {});
 });
 
-viewRouter.get('/users', (req, res) => {
-     const users = { users: data };
-     res.render('users', users);
+viewRouter.get("/welcome", (req, res) => {
+  const user = { name: "Julio Cesar CHIAPPA" };
+  res.render("index", user);
 });
 
-viewRouter.get('/home', (req, res) => {
-    const productsFilePath = path.join(config.DIRNAME, './files/products.json');
-    fs.readFile(productsFilePath, 'utf8', (err, data) => {
-        if (err) {
-            console.error('Error al leer el archivo de productos:', err);
-            return res.status(500).send('Error interno del servidor');
-        }
-        try {
-            const productList = JSON.parse(data);
-            res.render('home', { products: productList });
-        } catch (parseError) {
-            console.error('Error al analizar el archivo JSON de productos:', parseError);
-            return res.status(500).send('Error interno del servidor');
-        }
-    });
+viewRouter.get("/realtime_products", async (req, res) => {
+  try {
+    const productList = await managerProduct.getAllProducts();
+    res.render("realtime_products", { products: productList });
+  } catch (error) {
+    console.error(
+      "Error al obtener los productos desde la base de datos:",
+      error
+    );
+    return res.status(500).send("Error interno del servidor");
+  }
 });
 
-viewRouter.get('/realtime_products', (req, res) => {
-    const productsFilePath = path.join(config.DIRNAME, './files/products.json');
-    fs.readFile(productsFilePath, 'utf8', (err, data) => {
-        if (err) {
-            console.error('Error al leer el archivo de productos:', err);
-            return res.status(500).send('Error interno del servidor');
-        }
-        try {
-            const productList = JSON.parse(data);
-            res.render('realtime_products', { products: productList });
-        } catch (parseError) {
-            console.error('Error al analizar el archivo JSON de productos:', parseError);
-            return res.status(500).send('Error interno del servidor');
-        }
-    });
+viewRouter.get("/users", async (req, res) => {
+    try {
+      const userList = await managerUser.getAllUsers();
+      res.render("users", { users: userList });
+    } catch (error) {
+      console.error(
+        "Error al obtener los usuarios desde la base de datos:",
+        error
+      );
+      return res.status(500).send("Error interno del servidor");
+    }
+  });
 
-
-});
+  viewRouter.get("/carts", async (req, res) => {
+    try {
+      const cartList = await managerCart.getAllCarts();
+      res.render("carts", { carts: cartList });
+    } catch (error) {
+      console.error(
+        "Error al obtener el carrito de productos desde la base de datos:",
+        error
+      );
+      return res.status(500).send("Error interno del servidor");
+    }
+  });
 
 export default viewRouter;

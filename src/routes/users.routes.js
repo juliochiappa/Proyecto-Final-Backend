@@ -1,24 +1,21 @@
 import { Router } from 'express';
 import config from '../config.js';
-import CartManager from '../dao/cartsManager.js';
+import userModel from '../dao/models/users.model.js';
 
+const usersRouter = Router();
 
-const cartsRouter = Router();
-const manager = new CartManager();
-
-cartsRouter.get('/', async (req, res) => {
+usersRouter.get('/', async (req, res) => {
     try {
-        const process = await manager.getAllCarts();
-
+        const process = await userModel.paginate({role: 'user'}, {page: 1, limit: 10});
         res.status(200).send({ origin: config.SERVER, payload: process });
     } catch (err) {
         res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
     }
 });
 
-cartsRouter.post('/', async (req, res) => {
+usersRouter.post('/', async (req, res) => {
     try {
-        const process = await manager.addCarts(req.body);
+        const process = await userModel.create(req.body);
         
         res.status(200).send({ origin: config.SERVER, payload: process });
     } catch (err) {
@@ -26,12 +23,12 @@ cartsRouter.post('/', async (req, res) => {
     }
 });
 
-cartsRouter.put('/:id', async (req, res) => {
+usersRouter.put('/:id', async (req, res) => {
     try {
         const filter = { _id: req.params.id };
         const update = req.body;
         const options = { new: true };
-        const process = await manager.updateCarts(filter, update, options);
+        const process = await userModel.findOneAndUpdate(filter, update, options);
         
         res.status(200).send({ origin: config.SERVER, payload: process });
     } catch (err) {
@@ -39,10 +36,10 @@ cartsRouter.put('/:id', async (req, res) => {
     }
 });
 
-cartsRouter.delete('/:id', async (req, res) => {
+usersRouter.delete('/:id', async (req, res) => {
     try {
         const filter = { _id: req.params.id };
-        const process = await manager.deleteCarts(filter);
+        const process = await userModel.findOneAndDelete(filter);
 
         res.status(200).send({ origin: config.SERVER, payload: process });
     } catch (err) {
@@ -50,15 +47,5 @@ cartsRouter.delete('/:id', async (req, res) => {
     }
 });
 
-cartsRouter.delete('/:id/product/:pid', async (req, res) => {
-    try {
-        const filter = { _id: req.params.id }; 
-        const process = await manager.deleteCartItem(filter); 
 
-        res.status(200).send({ origin: config.SERVER, payload: process });
-    } catch (err) {
-        res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
-    }
-});
-
-export default cartsRouter;
+export default usersRouter;

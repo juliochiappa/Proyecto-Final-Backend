@@ -1,0 +1,24 @@
+<div>
+    <h1>Sistema chat Websocket</h1>
+
+    <input type="text" id="chat" name="chat" placeholder="Ingresar mensaje" style="width: 300px;">
+    <br />
+    <button onClick="sendMessage()">Enviar</button>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socketClient = io();
+    const chat = document.getElementById('chat');
+
+    socketClient.on('newMessageConfirmation', data => {
+        console.log(data);
+    });
+
+    const sendMessage = () => {
+        if (chat.value !== '') {
+            socketClient.emit('newMessage', chat.value);
+            console.log('Mensaje enviado');
+        }
+    }
+</script>

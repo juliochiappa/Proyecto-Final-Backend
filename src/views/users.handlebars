@@ -2,7 +2,7 @@
     <h1>¡ Listado de Usuarios !</h1>
     <ul class="list-group">
         {{#each users}}
-            <li class="list-group-item">{{lastName}}, {{firstName}} {{age}} años {{#if IsAdmin}}(admin){{/if}}</li>
+            <li class="list-group-item">{{lastName}}, {{firstName}}, {{email}}, {{password}} {{role}}</li>
         {{/each}}
     </ul>
 </div>
