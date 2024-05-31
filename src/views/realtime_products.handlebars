@@ -4,9 +4,14 @@
     <ul id="productsList" class="list-group">
         {{#each products}}
             <li class="list-group-item">{{title}}, {{description}}, {{code}}, {{price}}, {{status}}, {{stock}}, {{category}}, {{thumbnails}}</li>
+                <span class="black">
+                    <button class="btn btn-success" onclick="addCarts('{{_id}}')">Agregar al carrito</button>
+                </span>
         {{/each}}
     </ul>
 </div>
+
+
 
 <div class="mt-3">
     <h3>Producto Nuevo</h3>
@@ -92,6 +97,21 @@
         console.error('Error de red:', error);
     }
 });
+
+    const addToCart = async (pid) => {
+        try {
+            // Introducir un ID manualmente de algún carrito de la bd de atlas
+            const cart = '664b399c57a29d3c1d91864e';
+
+            const process = await fetch(`/api/carts/${cart}/products/${pid}`, {
+                method: 'PUT'
+            });
+            const result = await process.json();
+            console.log(result);
+        } catch (error) {
+            console.error('Error al agregar el producto al carrito:', error);
+    }
+};
 
 </script>
 
