@@ -5,7 +5,7 @@
         {{#each products}}
             <li class="list-group-item">{{title}}, {{description}}, {{code}}, {{price}}, {{status}}, {{stock}}, {{category}}, {{thumbnails}}</li>
                 <span class="black">
-                    <button class="btn btn-success" onclick="addCarts('{{_id}}')">Agregar al carrito</button>
+                    <button class="btn btn-success" onclick="addToCart('{{_id}}')">Agregar al carrito</button>
                 </span>
         {{/each}}
     </ul>
