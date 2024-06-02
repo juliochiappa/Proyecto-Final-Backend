@@ -1,12 +1,17 @@
 <div>
-    <h1>Carrito de Productos</h1>
+    <h1>Carrito de Compras de Productos</h1>
+    {{#each carts}}
+    <h4>Carrito {{@index}}</h4>
     <ul class="list-group">
-        {{#each carts}}
-            {{#each products}}
-                <li class="list-group-item">ID Producto: {{this._id}}, Producto: {{this.description}},  Stock: {{this.stock}}</li>
-            {{/each}}
+        {{#each this.products}}
+            <li class="list-group-item">
+                <p>ID Producto: {{this._id._id}}</p>
+                <p>Producto: {{this._id.description}}</p>
+                <p>Cantidad seleccionada: {{this.stock}}</p>
+            </li>
         {{/each}}
     </ul>
+    {{/each}}
 </div>
 
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script>
@@ -14,4 +19,3 @@
     const serverAddress = 'ws://localhost:8080';
     const socketClient = io(serverAddress);
 </script>
-
