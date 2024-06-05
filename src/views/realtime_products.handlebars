@@ -1,17 +1,56 @@
+{{!-- <style>
+    body {
+        background-color: #333 !important;
+    }
+
+    .a3 {
+        color: #f1f1f1;
+    }
+
+    .a3:hover {
+        color: #fff;
+    }
+</style> --}}
+
+<div>
+    {{#if message}}
+        <div class="alert alert-success">
+            {{{message}}}
+        </div>
+    {{/if}}
+
+    {{#if user}}
+        <p>Bienvenido {{user.firstName}} {{user.lastName}}, su mail es: ({{user.email}}) y su Rol: {{user.role}}</p>
+    {{/if}}
+<br>
+<br>
+
 <div>
     <h1>Listado de productos</h1>
 
     <ul id="productsList" class="list-group">
         {{#each products}}
             <li class="list-group-item">{{title}}, {{description}}, {{code}}, {{price}}, {{status}}, {{stock}}, {{category}}, {{thumbnails}}</li>
+                <br>
                 <span class="black">
                     <button class="btn btn-success" onclick="addToCart('{{_id}}')">Agregar al carrito</button>
                 </span>
+                <br>
         {{/each}}
     </ul>
 </div>
 
-
+{{!-- <div class="mt-2 text-end">
+    {{#if data.prevPage}}
+    <a class="a3" href="/realtime_products/{{data.prevPage}}">Anterior</a>
+    {{/if}}
+    
+    &nbsp;|&nbsp;
+    
+    {{#if data.nextPage}}
+    <a class="a3" href="/realtime_products/{{data.nextPage}}">Siguiente</a>
+    {{/if}}
+</div> --}}
 
 <div class="mt-3">
     <h3>Producto Nuevo</h3>
@@ -49,6 +88,7 @@
             <label for="thumbnails">Imágen:</label>
             <input class="form-control" type="text" id="thumbnails" name="thumbnails" placeholder="Imágen del producto">
         </div>
+        <br>
         <button type="submit" class="btn btn-success">Cargar</button>
     </form>
 </div>
@@ -101,7 +141,7 @@
     const addToCart = async (pid) => {
         try {
             // Introducir un ID manualmente de algún carrito de la bd de atlas
-            const cart = '664b399c57a29d3c1d91864e';
+            const cart = '66562bd1de568122192e03f1';
 
             const process = await fetch(`/api/carts/${cart}/products/${pid}`, {
                 method: 'PUT'
@@ -114,4 +154,7 @@
 };
 
 </script>
-
+<br>
+<form action="/api/session/logout" method="get">
+    <button type="submit" class="btn btn-success">Volver al Login</button>
+</form>

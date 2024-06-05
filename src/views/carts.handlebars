@@ -3,11 +3,11 @@
     {{#each carts}}
     <h4>Carrito {{@index}}</h4>
     <ul class="list-group">
-        {{#each this.products}}
+        {{#each products}}
             <li class="list-group-item">
-                <p>ID Producto: {{this._id._id}}</p>
-                <p>Producto: {{this._id.description}}</p>
-                <p>Cantidad seleccionada: {{this.stock}}</p>
+                <p>ID Producto: {{_id._id}}</p>
+                <p>Producto: {{_id.description}}</p>
+                <p>Cantidad seleccionada: {{stock}}</p>
             </li>
         {{/each}}
     </ul>
