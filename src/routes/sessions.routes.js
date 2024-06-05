@@ -27,13 +27,22 @@ const adminAuth = (req, res, next) => {
 
 sessionRouter.post('/register', async (req, res) => {
     try {
-        const { email } = req.body;
-
-        if (req.session.user && req.session.user.email === email) {
-            return res.status(401).send({ origin: config.SERVER, payload: `Ya hay un usuario autenticado con el correo electrónico ${email}` });
+        const existingUser = await userModel.findOne({ email: req.body.email });
+        if (existingUser) {
+            return res.status(400).json({ error: 'El correo electrónico ya está registrado' });
         }
-    } catch (err) {
-        res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
+        const newUser = new userModel({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email,
+            password: req.body.password,
+            role: req.body.role || 'user' 
+        });
+        await newUser.save();
+        res.status(201).json(newUser);
+    } catch (error) {
+        console.error('Error en el registro:', error);
+        res.status(500).json({ error: 'Ha ocurrido un error en el servidor' });
     }
 });
 
