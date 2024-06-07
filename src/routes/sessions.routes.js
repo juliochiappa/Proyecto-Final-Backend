@@ -1,6 +1,6 @@
 import { Router } from 'express';
-
 import config from '../config.js';
+import userModel from '../dao/models/users.model.js';
 
 const sessionRouter = Router();
 
