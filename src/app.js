@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import flash from 'express-flash';
+import passport from 'passport';
 //import FileStore from 'session-file-store';
 
 
@@ -20,11 +21,11 @@ import initSocket from './sockets.js';
 
 const app = express();
 
-
 const expressInstance = app.listen(config.PORT, async () => {
     await mongoose.connect(config.MONGODB_URI);
     console.log(`App activa en puerto ${config.PORT} enlazada a ddbb Atlas`);
 });
+
 const socketServer = initSocket(expressInstance);
 app.set('socketServer', socketServer);
 
@@ -41,6 +42,9 @@ app.use(session({
     resave: true,
     saveUninitialized: true,
 }));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.engine('handlebars', handlebars.engine());
 app.set('views', `${config.DIRNAME}/views`);

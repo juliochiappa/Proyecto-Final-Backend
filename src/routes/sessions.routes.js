@@ -1,8 +1,14 @@
 import { Router } from 'express';
+import passport from 'passport';
 import config from '../config.js';
-import userModel from '../dao/models/users.model.js';
+import { createHash, isValidPassword, verifyRequiredBody } from '../utils.js';
+import UserManager from '../dao/usersManager.js';
+import initAuthStrategies from '../auth/passport.strategies.js';
+
 
 const sessionRouter = Router();
+const manager = new UserManager();
+initAuthStrategies();
 
 sessionRouter.get('/counter', async (req, res) => {
     try {
@@ -19,65 +25,92 @@ sessionRouter.get('/counter', async (req, res) => {
 });
 
 const adminAuth = (req, res, next) => {
-    if (req.session.user?.role !== 'admin')
-        return res.status(401).send({ origin: config.SERVER, payload: 'Acceso no autorizado: se requiere autenticación y nivel de admin' });
-
+    if (req.session.user?.role !== 'admin') {
+        return res.status(403).send({ origin: config.SERVER, payload: 'Acceso no autorizado: se requiere autenticación y nivel de admin' });
+    }
     next();
 }
 
-sessionRouter.post('/register', async (req, res) => {
-    try {
-        const existingUser = await userModel.findOne({ email: req.body.email });
-        if (existingUser) {
-            return res.status(400).json({ error: 'El correo electrónico ya está registrado' });
-        }
-        const newUser = new userModel({
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            email: req.body.email,
-            password: req.body.password,
-            role: req.body.role || 'user' 
-        });
-        await newUser.save();
-        res.status(201).json(newUser);
-    } catch (error) {
-        console.error('Error en el registro:', error);
-        res.status(500).json({ error: 'Ha ocurrido un error en el servidor' });
-    }
+sessionRouter.get('/hash/:password', async (req, res) => {
+    res.status(200).send({ origin: config.SERVER, payload: createHash(req.params.password) });
 });
 
-sessionRouter.post('/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
 
-        const savedFirstName = 'Julio';
-        const savedLastName = 'Chiappa';
-        const savedEmail = 'jchiappa@gmail.com';
-        const savedPassword = 'abc123';
-        const savedRole =  'user';
-        
-        
-        if ( email !== savedEmail || password !== savedPassword) {
-            return res.status(401).send({ origin: config.SERVER, payload: `Los datos de acceso no son válidos` });
-        } 
-        req.session.user = {firstName: savedFirstName, lastName: savedLastName, email: savedEmail, role: savedRole};
-        res.redirect('/realtime_products');
-        //res.status(200).send({ origin: config.SERVER, payload: `Bienvenido a nuestro sitio!!` });
-    
+sessionRouter.post('/register', verifyRequiredBody(['firstName', 'lastName', 'email', 'password']), async (req, res) => {
+    try {
+        const { firstName, lastName, email, password } = req.body;
+        const foundUser = await manager.getOne({ email: email });
+        if (!foundUser) {
+            const process = await manager.addUser({ firstName, lastName, email, password: createHash(password)});
+            res.status(200).send({ origin: config.SERVER, payload: process });
+        } else {
+            res.status(400).send({ origin: config.SERVER, payload: 'El email ya se encuentra registrado' });
+        }
     } catch (err) {
         res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
     }
 });
 
-sessionRouter.get('/private', adminAuth, async (req, res) => {
+sessionRouter.post('/login', verifyRequiredBody(['email', 'password']), async (req, res) => {
     try {
-        if (req.session.user.role !== 'admin') {
+        const { email, password } = req.body;
+        const foundUser = await manager.getOne({ email: email });
 
-        return res.status(401).send({ origin: config.SERVER, payload: `Se necesita ser ADMIN para poder ingresar` });
-        } 
+        if (foundUser && isValidPassword(password, foundUser.password)) {
+            const { password, ...filteredFoundUser } = foundUser;
+            req.session.user = filteredFoundUser;
+            req.session.save(err => {
+                if (err) return res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
 
+                //res.redirect('/realtime_products');
+                res.redirect('/profile');
+            });
+        } else {
+            res.status(401).send({ origin: config.SERVER, payload: 'Datos de acceso no válidos' });
+        }
+    } catch (err) {
+        res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
+    }
+});
+
+sessionRouter.post('/pplogin', verifyRequiredBody(['email', 'password']), passport.authenticate('login', { failureRedirect: `/login?error=${encodeURI('Usuario o clave no válidos')}`}), async (req, res) => {
+    try {
+        req.session.user = req.user;
+        req.session.save(err => {
+            if (err) return res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
+        
+            res.redirect('/realtime_products');
+            //res.redirect('/profile');
+        });
+    } catch (err) {
+        res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
+    }
+});
+
+// Endpoint para autenticación aplicando Passport contra servicio externo (Github).
+// Este endpoint va VACIO, es al cual apuntamos desde la plantilla
+// y solo se encarga de redireccionar al servicio externo
+sessionRouter.get('/ghlogin', passport.authenticate('ghlogin', {scope: ['user']}), async (req, res) => {
+});
+
+sessionRouter.get('/ghlogincallback', passport.authenticate('ghlogin', {failureRedirect: `/login?error=${encodeURI('Error al identificar con Github')}`}), async (req, res) => {
+    try {
+        req.session.user = req.user // req.user es inyectado AUTOMATICAMENTE por Passport al parsear el done()
+        req.session.save(err => {
+            if (err) return res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
+            
+            //res.redirect('/realtime_products');
+            res.redirect('/profile');
+        });
+    } catch (err) {
+        res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
+    }
+});
+
+
+sessionRouter.get('/admin', adminAuth, async (req, res) => {
+    try {
         res.status(200).send({ origin: config.SERVER, payload: `Bienvenido ADMIN !!` });
-    
     } catch (err) {
         res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
     }

@@ -69,7 +69,7 @@ viewRouter.get("/register", (req, res) => {
 
 viewRouter.get("/login", (req, res) => {
   if (req.session.user) return res.redirect("/profile");
-  res.render("login", {});
+  res.render("login", { showError: req.query.error ? true: false, errorMessage: req.query.error });
 });
 
 viewRouter.get("/profile", (req, res) => {

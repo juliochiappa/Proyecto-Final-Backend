@@ -11,6 +11,10 @@ const config = {
   MONGODB_URI: 'mongodb+srv://coder_53160:coder2024@clustercoder.ueqobzv.mongodb.net/ecommerce',
   MONGODB_ID_REGEX: /^[a-fA-F0-9]{24}$/,
   SECRET: 'coder_53160_abc1118',
+  
+  GITHUB_CLIENT_ID: 'Iv23ct5oQGlZkAyUB6vR',
+  GITHUB_CLIENT_SECRET: '3b12fa745390b051d46cd8b485b2303f334cc189',
+  GITHUB_CALLBACK_URL: 'http://localhost:8080/api/session/ghlogincallback'
 };
 
 export default config;
