@@ -9,8 +9,9 @@ const localStrategy = local.Strategy;
 const manager = new UserManager();
 
 
-//Estrategia Local
 const initAuthStrategies = () => {
+
+    //Estrategia Local
     passport.use('login', new localStrategy(
         {passReqToCallback: true, usernameField: 'email'},
         async (req, username, password, done) => {
@@ -29,8 +30,27 @@ const initAuthStrategies = () => {
         }
     ));
 
+    // passport.use('register', new localStrategy(
+    //     {passReqToCallback: true, usernameField: 'email'},
+    //     async (req, username, password, done) => {
+    //         try {
+    //             const { firstName, lastName, email, password } = req.body;
+    //             const foundUser = await manager.getOne({ email: username });
+    //             if (!foundUser) {
+    //             const process = await manager.addUser({ firstName, lastName, email, password: createHash(password)});
+    //             return done(null, process);
+    //             } else {
+    //                 return done(null, false);
+    //             }
+    //         } catch (err) {
+    //             return done(err, false);
+    //         }
+    //     }
+    // ));
+
+   
     //Estrategia de GitHub
-    passport.use('ghlogin', new GitHubStrategy(
+    passport.use('ghlogin', new GitHubStrategy( 
         {
             clientID: config.GITHUB_CLIENT_ID,
             clientSecret: config.GITHUB_CLIENT_SECRET,
@@ -44,9 +64,6 @@ const initAuthStrategies = () => {
                 
                 // Necesitamos que en el profile haya un email
                 if (email) {
-                    // Tratamos de ubicar en NUESTRA base de datos un usuario
-                    // con ese email, si no está lo creamos y lo devolvemos,
-                    // si ya existe retornamos directamente esos datos
                     const foundUser = await manager.getOne({ email: email });
 
                     if (!foundUser) {

@@ -51,6 +51,20 @@ sessionRouter.post('/register', verifyRequiredBody(['firstName', 'lastName', 'em
     }
 });
 
+// sessionRouter.post('/ppregister', verifyRequiredBody(['firstName', 'lastName', 'email', 'password']), passport.authenticate('register', { failureRedirect: `/login?error=${encodeURI('El email ya esta registrado')}`}), async (req, res) => {
+//     try {
+//         req.session.user = req.user;
+//         req.session.save(err => {
+//             if (err) return res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
+        
+//             res.redirect('/login');
+//         });
+//     } catch (err) {
+//         res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
+//     }
+        
+// });
+
 sessionRouter.post('/login', verifyRequiredBody(['email', 'password']), async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -88,9 +102,8 @@ sessionRouter.post('/pplogin', verifyRequiredBody(['email', 'password']), passpo
 });
 
 // Endpoint para autenticación aplicando Passport contra servicio externo (Github).
-// Este endpoint va VACIO, es al cual apuntamos desde la plantilla
-// y solo se encarga de redireccionar al servicio externo
-sessionRouter.get('/ghlogin', passport.authenticate('ghlogin', {scope: ['user']}), async (req, res) => {
+// Solo se encarga de redireccionar al servicio externo
+sessionRouter.get('/ghlogin', passport.authenticate('ghlogin', {scope: ['user:email']}), async (req, res) => {
 });
 
 sessionRouter.get('/ghlogincallback', passport.authenticate('ghlogin', {failureRedirect: `/login?error=${encodeURI('Error al identificar con Github')}`}), async (req, res) => {

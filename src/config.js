@@ -13,7 +13,7 @@ const config = {
   SECRET: 'coder_53160_abc1118',
   
   GITHUB_CLIENT_ID: 'Iv23ct5oQGlZkAyUB6vR',
-  GITHUB_CLIENT_SECRET: '3b12fa745390b051d46cd8b485b2303f334cc189',
+  GITHUB_CLIENT_SECRET: 'f44ed04a7380bc55c379d3af6bcb058635fb9a6b',
   GITHUB_CALLBACK_URL: 'http://localhost:8080/api/session/ghlogincallback'
 };
 
