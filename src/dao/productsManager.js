@@ -4,9 +4,21 @@ class ProductManager {
   constructor() {
   }
   
-  getAllProducts = async (limit = 0) => {
+//   getAllProducts = async (limit = 0) => {
+//     try {
+//         return limit === 0 ? await productModel.find().lean(): await productModel.find().limit(limit).lean();
+//     } catch (err) {
+//         return err.message;
+//     };
+// };
+
+getAllProducts = async (limit = 0, page = 1) => {
     try {
-        return limit === 0 ? await productModel.find().lean(): await productModel.find().limit(limit).lean();
+        if (limit === 0) {
+            return await productModel.find().lean();
+        } else {
+            return await productModel.paginate({}, { page: page, limit: limit, lean: true });
+        }
     } catch (err) {
         return err.message;
     };

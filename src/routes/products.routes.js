@@ -7,6 +7,14 @@ import ProductManager from '../dao/productsManager.js';
 const productsRouter = Router();
 const manager = new ProductManager();
 
+productsRouter.param('id', (req, res, next, id) =>{
+        if (config.MONGODB_ID_REGEX.test(id)) {
+            req.validatedId = id; 
+            next(); 
+        } else {
+            res.status(404).send({ origin: config.SERVER, payload: null, error: 'El ID ingresado no es válido' });
+        }
+});
 
 productsRouter.get('/', async (req, res) => {
     try {
@@ -31,9 +39,9 @@ productsRouter.get('/aggregate', async (req, res) => {
 
 productsRouter.get('/one/:id', async (req, res) => {
     try {
-        const product = await manager.getProductById(req.params.id);
+        const product = await manager.getProductById(req.validatedId);
 
-        res.status(200).send({ origin: config.SERVER, payload: product });
+            res.status(200).send({ origin: config.SERVER, payload: product });
     } catch (err) {
         res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
     }
@@ -61,7 +69,7 @@ productsRouter.post('/', uploader.single('thumbnail'), async (req, res) => {
 
 productsRouter.put('/:id', async (req, res) => {
     try {
-        const filter = { _id: req.params.id };
+        const filter = { _id: req.validatedId };
         const update = req.body;
         const options = { new: true };
         const process = await manager.updateProduct(filter, update, options);
@@ -74,13 +82,17 @@ productsRouter.put('/:id', async (req, res) => {
 
 productsRouter.delete('/:id', async (req, res) => {
     try {
-        const filter = { _id: req.params.id };
+        const filter = { _id: req.validatedId };
         const process = await manager.deleteProduct(filter);
 
         res.status(200).send({ origin: config.SERVER, payload: process });
     } catch (err) {
         res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
     }
+});
+
+productsRouter.all ('*', async (req, res) => {
+    res.status(404).send({ origin: config.SERVER, payload: null, error: 'No se encuentra la ruta solicitada' });
 });
 
 export default productsRouter;

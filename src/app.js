@@ -8,16 +8,15 @@ import flash from 'express-flash';
 import passport from 'passport';
 //import FileStore from 'session-file-store';
 
-
-
 import config from './config.js';
 import productsRouter from './routes/products.routes.js';
 import cartsRouter from './routes/carts.routes.js';
 import usersRouter from './routes/users.routes.js';
 import cookiesRouter from './routes/cookies.routes.js';
-import sessionRouter from './routes/sessions.routes.js';
+import authRouter from './routes/auth.routes.js';
 import viewRouter from './routes/views.routes.js';
 import initSocket from './sockets.js';
+import TestRouter from './routes/test.routes.js';
 
 const app = express();
 
@@ -57,7 +56,8 @@ app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/cookies', cookiesRouter);
-app.use('/api/session', sessionRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/test', new TestRouter().getRouter());
 app.use('/static', express.static(`${config.DIRNAME}/public`));
 
 

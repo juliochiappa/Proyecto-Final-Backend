@@ -1,13 +1,23 @@
 import passport from 'passport';
 import local from 'passport-local';
 import GitHubStrategy from 'passport-github2';
+import jwt from 'passport-jwt';
+
 import config from '../config.js';
 import UserManager from '../dao/usersManager.js';
 import { isValidPassword } from '../utils.js';
 
 const localStrategy = local.Strategy;
+const jwtStrategy = jwt.Strategy;
+const jwtExtractor = jwt.ExtractJwt; //Solamente para el uso de las cookies
 const manager = new UserManager();
 
+const cookieExtractor = (req) => {
+    let token = null;
+    if (req && req.cookies) token  = req.cookies ['cookietoken'];
+
+    return token;
+}
 
 const initAuthStrategies = () => {
 
@@ -30,25 +40,6 @@ const initAuthStrategies = () => {
         }
     ));
 
-    // passport.use('register', new localStrategy(
-    //     {passReqToCallback: true, usernameField: 'email'},
-    //     async (req, username, password, done) => {
-    //         try {
-    //             const { firstName, lastName, email, password } = req.body;
-    //             const foundUser = await manager.getOne({ email: username });
-    //             if (!foundUser) {
-    //             const process = await manager.addUser({ firstName, lastName, email, password: createHash(password)});
-    //             return done(null, process);
-    //             } else {
-    //                 return done(null, false);
-    //             }
-    //         } catch (err) {
-    //             return done(err, false);
-    //         }
-    //     }
-    // ));
-
-   
     //Estrategia de GitHub
     passport.use('ghlogin', new GitHubStrategy( 
         {
@@ -57,31 +48,36 @@ const initAuthStrategies = () => {
             callbackURL: config.GITHUB_CALLBACK_URL
         },
         async (req, accessToken, refreshToken, profile, done) => {
-            try {
-                // Si passport llega hasta acá, es porque la autenticación en Github
-                // ha sido correcta, tendremos un profile disponible
-                const email = profile._json?.email || null;
+           try {
+               const emailsList = profile.emails || null;
+               let email = profile._json?.email || null;
+            if (!emailsList && !email) {
+                   const response = await fetch('https://api.github.com/user/emails', {
+                       headers: {
+                           'Authorization': `token ${accessToken}`,
+                           'User-Agent': config.APP_NAME
+                       }
+                   });
+                   const emails = await response.json();
                 
-                // Necesitamos que en el profile haya un email
-                if (email) {
+                   email = emails.filter(email => email.verified).map(email => ({ value: email.email }));
+               }     
+                if (email !== null) {
                     const foundUser = await manager.getOne({ email: email });
-
-                    if (!foundUser) {
+                   if (!foundUser) {
                         const user = {
                             firstName: profile._json.name.split(' ')[0],
                             lastName: profile._json.name.split(' ')[1],
                             email: email,
                             password: 'none'
                         }
-
-                        const process = await manager.addUser(user);
-
-                        return done(null, process);
+                       const process = await manager.addUser(user);
+                       return done(null, process);
                     } else {
                         return done(null, foundUser);
                     }
                 } else {
-                    return done(new Error('Faltan datos de perfil'), null);
+                    return done(new Error('Email no disponible'), null);
                 }
             } catch (err) {
                 return done(err, false);
@@ -89,6 +85,21 @@ const initAuthStrategies = () => {
         }
     ));
 
+    //Estrategia de JWT vía cookie
+    passport.use('jwtlogin', new jwtStrategy(
+       {
+        jwtFromRequest: jwtExtractor.fromExtractors([cookieExtractor]),
+        secretOrKey: config.SECRET
+       },
+       async (jwt_payload, done) => {
+            try{
+                return (null, jwt_payload);
+            } catch(err){
+                return done(err);
+            }
+        }
+        
+    ));
 
     passport.serializeUser((user, done) => {
         done(null, user);
@@ -98,5 +109,18 @@ const initAuthStrategies = () => {
         done(null, user);
     });
 }
+
+export const passportCall = strategy => {
+    return async (req, res, next) => {
+        passport.authenticate(strategy, { session: false }, function (err, user, info) {
+            if (err) return next(err);
+            //if (!user) return res.status(401).send({ origin: config.SERVER, payload: null, error: info.messages ? info.messages : info.toString() });
+            if (!user) return res.status(401).send({ origin: config.SERVER, payload: null, error: 'Usuario no autenticado' });
+
+            req.user = user;
+            next();
+        })(req, res, next);
+    }
+};
 
 export default initAuthStrategies;
