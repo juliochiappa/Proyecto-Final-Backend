@@ -1,7 +1,7 @@
 import {Router} from 'express';
-import {uploader} from '../uploader.js';
+import {uploader} from '../services/uploader.js';
 import config from '../config.js';
-import ProductManager from '../dao/productsManager.js';
+import ProductManager from '../controllers/productsManager.js';
 
 
 const productsRouter = Router();

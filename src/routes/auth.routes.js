@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import passport from 'passport';
 import config from '../config.js';
-import { createHash, isValidPassword, verifyRequiredBody, createToken, verifyToken } from '../utils.js';
-import UserManager from '../dao/usersManager.js';
+import { createHash, isValidPassword, verifyRequiredBody, createToken, verifyToken } from '../services/utils.js';
+import UserManager from '../controllers/usersManager.js';
 import initAuthStrategies, {passportCall} from '../auth/passport.strategies.js';
 
 

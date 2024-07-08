@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import config from '../config.js';
-import CartManager from '../dao/cartsManager.js';
+import CartManager from '../controllers/cartsManager.js';
 
 
 const cartsRouter = Router();
@@ -38,6 +38,7 @@ cartsRouter.put('/:id', async (req, res) => {
         res.status(500).send({ origin: config.SERVER, payload: null, error: err.message });
     }
 });
+
 cartsRouter.put('/:cid/products/:pid', async (req, res) => {
     try {
         const cart = req.params.cid;
